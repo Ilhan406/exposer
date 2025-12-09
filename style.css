@@ -1,0 +1,111 @@
+/* Base (suitable with older style.css) */
+body {
+  margin: 0;
+  background: #02030a;
+  color: #eaf6ff;
+  font-family: 'Arial', sans-serif;
+  overflow-x: hidden;
+}
+.container {
+  width: 90%;
+  max-width: 980px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+.title { font-size: 32px; font-weight: 900; margin-bottom: 6px; }
+.subtitle { font-size: 18px; margin-bottom: 18px; font-weight:700; }
+.neon-blue { color:#4dbaff; text-shadow: 0 0 8px #4dbaff, 0 0 18px #4dbaff; }
+.neon-text { color:#4cc9ff; text-shadow: 0 0 8px #00bfff; }
+.tyson-img { width:280px; margin: 12px 0; border-radius:12px; box-shadow: 0 0 26px rgba(77,186,255,0.12); }
+
+.btn {
+  display:inline-block; padding:12px 20px; margin:8px; text-decoration:none; border-radius:12px; cursor:pointer;
+  font-weight:700; background:transparent; border:none; color:inherit;
+}
+.small { padding:8px 14px; font-size:14px; }
+
+.neon-blue-border {
+  color:#4dbaff; border:2px solid #4dbaff;
+  box-shadow: 0 6px 30px rgba(77,186,255,0.08), inset 0 0 14px rgba(77,186,255,0.06);
+}
+
+.neon-3d {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%);
+  border-radius: 14px;
+  padding: 14px 22px;
+  font-size:16px;
+  color: #fff;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.6),
+    0 6px 18px rgba(77,186,255,0.06),
+    0 0 28px rgba(77,186,255,0.25);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.neon-3d::before {
+  content: "";
+  position: absolute; left: -2px; top: -2px; right: -2px; bottom: -2px; z-index:-1;
+  border-radius:16px;
+  background: linear-gradient(90deg, rgba(77,186,255,0.18), rgba(0,255,200,0.08));
+  filter: blur(6px);
+  opacity: 0.95;
+}
+.neon-3d:active { transform: translateY(4px) rotateX(6deg); box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+
+/* Answer buttons style (distinct neon colors) */
+.answer {
+  display:inline-block;
+  padding:12px 18px;
+  margin:8px;
+  min-width:240px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  color:#06131b;
+  background: linear-gradient(180deg,#b6fff0,#a0fff0);
+  box-shadow: 0 10px 30px rgba(0,255,200,0.12), 0 0 28px rgba(0,255,200,0.08) inset;
+  border: 2px solid rgba(0,255,200,0.28);
+  transform: perspective(600px) translateZ(0);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.answer:hover { transform: translateY(-6px) rotateX(3deg); box-shadow: 0 18px 48px rgba(0,255,200,0.12); }
+.answer.selected { outline: 3px dashed rgba(255,255,255,0.12); box-shadow: 0 14px 40px rgba(0,0,0,0.5); transform: translateY(-2px); }
+
+/* layout for answers - allow position randomness using helper classes */
+.answers-grid { min-height:220px; position:relative; margin: 8px auto; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; }
+
+.pos-top { align-self:flex-start; }
+.pos-mid { align-self:center; }
+.pos-bottom { align-self:flex-end; }
+
+/* color variants (you can add more) */
+.variant-1 { background: linear-gradient(180deg,#ffd6d6,#ff9ea6); border:2px solid rgba(255,120,120,0.2); color:#150000; }
+.variant-2 { background: linear-gradient(180deg,#d6f7ff,#9ee7ff); border:2px solid rgba(0,150,255,0.18); color:#001827; }
+.variant-3 { background: linear-gradient(180deg,#e6ffd6,#b9ff9e); border:2px solid rgba(100,220,0,0.18); color:#061700; }
+
+/* Feedback pages */
+.neon-green { color: #5affb2; text-shadow: 0 0 12px #5affb2;}
+.neon-red { color: #ff6b6b; text-shadow: 0 0 12px #ff6b6b; }
+
+.text { width:78%; margin:0 auto 18px; font-size:16px; line-height:1.6; color:#dff7ff; }
+
+.fade-in { animation: fade 0.6s ease; }
+@keyframes fade { from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
+
+/* decorative background */
+body::before {
+  content: ""; position: fixed; inset:0; z-index:-1;
+  background: radial-gradient(circle at 10% 20%, rgba(77,186,255,0.06), transparent 8%),
+              radial-gradient(circle at 80% 70%, rgba(0,255,200,0.04), transparent 15%);
+  filter: blur(40px);
+}
+/* Feedback pages styling ensured */
+.feedback.good { border:2px solid rgba(90,255,180,0.4); background:rgba(10,50,20,0.2); }
+.feedback.bad  { border:2px solid rgba(255,90,90,0.4);  background:rgba(50,10,10,0.2); }

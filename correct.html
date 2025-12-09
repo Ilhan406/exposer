@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Bonne réponse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container fade-in">
+  <h1 class="title neon-green">Bonne réponse !</h1>
+  <p class="text" id="explain"></p>
+  <div class="buttons">
+    <button id="nextBtn" class="btn neon-3d">Suivant</button>
+    <a href="index.html" class="btn small neon-blue-border">Retour au menu</a>
+  </div>
+</div>
+<script>
+// Read state stored by quiz
+const state = JSON.parse(localStorage.getItem('quiz_state') || '{}');
+document.getElementById('explain').innerText = state.explain || '';
+document.getElementById('nextBtn').addEventListener('click', () => {
+    // advance and return to quiz or finish
+    const next = (state.currentIndex || 0) + 1;
+    state.currentIndex = next;
+    localStorage.setItem('quiz_state', JSON.stringify(state));
+    if (next >= (state.total||12)) {
+        // finished
+        alert('Fin du quiz — merci !');
+        window.location = 'index.html';
+    } else {
+        window.location = 'quiz.html';
+    }
+});
+</script>
+</body>
+</html>
