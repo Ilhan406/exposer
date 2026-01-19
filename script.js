@@ -1,7 +1,19 @@
 // Quiz logic — VERSION STABLE (toujours question 1)
 
-// Nettoyage total au chargement de cette page
-localStorage.removeItem('quiz_state');
+
+let state = JSON.parse(localStorage.getItem('quiz_state'));
+
+if (!state || typeof state.currentIndex !== 'number') {
+  // Nouveau quiz
+  state = {
+    currentIndex: 0,
+    score: 0
+  };
+} else {
+  // Retour depuis page feedback → question suivante
+  state.currentIndex++;
+}
+
 
 const questions = [
   {
