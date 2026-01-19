@@ -1,32 +1,30 @@
 // ─────────────── STATE ───────────────
-let state = null;
+let state;
 
 try {
-  const saved = localStorage.getItem('quiz_state');
-  if (saved) {
-    state = JSON.parse(saved);
-  }
+  state = JSON.parse(localStorage.getItem('quiz_state'));
 } catch (e) {
-  console.warn("Erreur lors de la lecture du localStorage");
+  state = null;
 }
 
-// Nouvel état si pas valide
+// Si pas d'état valide → on commence à zéro
 if (!state || typeof state.currentIndex !== 'number') {
   state = {
     currentIndex: 0,
     score: 0,
     selected: null
   };
-} else {
-  // Retour depuis feedback → question suivante
-  state.currentIndex++;
+}
+// Sinon (on revient de correct.html ou incorrect.html) → on avance d'une seule question
+else {
+  state.currentIndex += 1;
   state.selected = null;
 }
 
-// Nettoyage après lecture
+// On nettoie pour éviter les problèmes au prochain chargement
 localStorage.removeItem('quiz_state');
 
-// ─────────────── QUESTIONS ───────────────
+// ─────────────── QUESTIONS (dans l'ordre 1 à 12, sans mélange) ───────────────
 const questions = [
   {
     id: 1,
@@ -124,7 +122,7 @@ function shuffle(array) {
   return copy;
 }
 
-// ─────────────── DOM ELEMENTS ───────────────
+// ─────────────── DOM ───────────────
 const qTitle = document.getElementById('q-title');
 const qSub = document.getElementById('q-sub');
 const answersWrap = document.getElementById('answers');
@@ -137,9 +135,10 @@ function render() {
 
   answersWrap.innerHTML = '';
 
+  // Fin du quiz
   if (state.currentIndex >= questions.length) {
     qTitle.innerText = "Quiz terminé 🎉";
-    qSub.innerText = `Score final : ${state.score} / ${questions.length}`;
+    qSub.innerText = `Ton score : ${state.score} / ${questions.length}`;
     progress.innerText = "";
     validateBtn.style.display = "none";
     return;
@@ -151,18 +150,18 @@ function render() {
   qSub.innerText = current.q;
   progress.innerText = `Question ${state.currentIndex + 1} / ${questions.length}`;
 
-  // Mélange des réponses uniquement
-  const shuffled = shuffle(current.choices.map((c, i) => ({ text: c, index: i })));
+  // On mélange UNIQUEMENT l'ordre des choix de réponse (pas les questions)
+  const shuffled = shuffle(current.choices.map((text, idx) => ({ text, idx })));
 
-  shuffled.forEach(item => {
+  shuffled.forEach(({ text, idx }) => {
     const btn = document.createElement('button');
-    btn.className = 'answer'; // ← utilise ta classe existante .answer
-    btn.textContent = item.text;
+    btn.className = 'answer';
+    btn.textContent = text;
 
     btn.onclick = () => {
-      document.querySelectorAll('.answer').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.answer').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      state.selected = item.index;
+      state.selected = idx;
     };
 
     answersWrap.appendChild(btn);
@@ -173,7 +172,7 @@ function render() {
 if (validateBtn) {
   validateBtn.onclick = () => {
     if (state.selected === null) {
-      alert("Choisis une réponse avant de valider !");
+      alert("Sélectionne une réponse avant de valider !");
       return;
     }
 
@@ -182,7 +181,6 @@ if (validateBtn) {
 
     if (isCorrect) state.score++;
 
-    // Sauvegarde pour la page de feedback
     localStorage.setItem('quiz_state', JSON.stringify({
       currentIndex: state.currentIndex,
       score: state.score,
