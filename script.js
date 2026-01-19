@@ -3,14 +3,12 @@ let state = null;
 
 try {
     const saved = localStorage.getItem('quiz_state');
-    if (saved) {
-        state = JSON.parse(saved);
-    }
+    if (saved) state = JSON.parse(saved);
 } catch (e) {
     console.warn("Erreur lecture localStorage :", e);
 }
 
-// Nouvel état si pas valide
+// Nouvel état si absent ou invalide
 if (!state || typeof state.currentIndex !== 'number') {
     state = {
         currentIndex: 0,
@@ -18,12 +16,12 @@ if (!state || typeof state.currentIndex !== 'number') {
         selected: null
     };
 } else {
-    // Retour depuis feedback → question suivante
+    // On vient de correct/incorrect → on avance
     state.currentIndex++;
     state.selected = null;
 }
 
-// Nettoyage storage
+// On nettoie après lecture pour éviter les problèmes
 localStorage.removeItem('quiz_state');
 
 // ─────────────── QUESTIONS ───────────────
@@ -116,91 +114,82 @@ const questions = [
 
 // ─────────────── HELPERS ───────────────
 function shuffle(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        [copy[i], copy[j]] = [copy[j], copy[i]];
     }
-    return newArray;
+    return copy;
 }
 
-// ─────────────── ELEMENTS DOM ───────────────
-const elements = {
+// ─────────────── DOM ELEMENTS ───────────────
+const els = {
     title: document.getElementById('q-title'),
-    subtitle: document.getElementById('q-sub'),
+    question: document.getElementById('q-sub'),
     answers: document.getElementById('answers'),
-    validateBtn: document.getElementById('validateBtn'),
+    validate: document.getElementById('validateBtn'),
     progress: document.getElementById('progress')
 };
 
-// Vérification basique
-if (!elements.title || !elements.subtitle || !elements.answers || !elements.validateBtn) {
-    console.error("Certains éléments du DOM sont introuvables ! Vérifie les id dans ton HTML.");
-}
-
-// ─────────────── RENDER ───────────────
+// ─────────────── RENDER QUESTION ───────────────
 function render() {
-    if (!elements.answers) return;
+    if (!els.answers) return;
 
-    elements.answers.innerHTML = '';
+    els.answers.innerHTML = '';
 
-    // Fin du quiz ?
+    // Quiz terminé
     if (state.currentIndex >= questions.length) {
-        elements.title.textContent = "Quiz terminé 🎉";
-        elements.subtitle.textContent = `Score final : ${state.score} / ${questions.length}`;
-        elements.progress.textContent = "";
-        elements.validateBtn.style.display = "none";
+        els.title.textContent = "Quiz terminé ! 🎉";
+        els.question.textContent = `Ton score : ${state.score} / ${questions.length}`;
+        els.progress.textContent = "";
+        els.validate.style.display = "none";
         return;
     }
 
-    const current = questions[state.currentIndex];
+    const q = questions[state.currentIndex];
 
-    elements.title.textContent = `QUESTION ${state.currentIndex + 1} —`;
-    elements.subtitle.textContent = current.q;
-    elements.progress.textContent = `Question ${state.currentIndex + 1} / ${questions.length}`;
+    els.title.textContent = `QUESTION ${state.currentIndex + 1}`;
+    els.question.textContent = q.q;
+    els.progress.textContent = `${state.currentIndex + 1} / ${questions.length}`;
 
-    // Mélange des choix
-    const shuffled = shuffle(current.choices.map((text, index) => ({ text, index })));
+    const shuffled = shuffle(q.choices.map((text, idx) => ({text, idx})));
 
-    shuffled.forEach(({ text, index }) => {
+    shuffled.forEach(({text, idx}) => {
         const btn = document.createElement('button');
-        btn.className = 'answer';
+        btn.className = 'answer-btn';
         btn.textContent = text;
-        
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.answer').forEach(b => b.classList.remove('selected'));
+
+        btn.onclick = () => {
+            document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
-            state.selected = index;
-        });
-        
-        elements.answers.appendChild(btn);
+            state.selected = idx;
+        };
+
+        els.answers.appendChild(btn);
     });
 }
 
 // ─────────────── VALIDATION ───────────────
-if (elements.validateBtn) {
-    elements.validateBtn.addEventListener('click', () => {
-        if (state.selected === null) {
-            alert("Sélectionne une réponse avant de valider !");
-            return;
-        }
+els.validate?.addEventListener('click', () => {
+    if (state.selected === null) {
+        alert("Sélectionne une réponse avant de valider !");
+        return;
+    }
 
-        const current = questions[state.currentIndex];
-        const isCorrect = state.selected === current.correctIndex;
+    const current = questions[state.currentIndex];
+    const isCorrect = state.selected === current.correctIndex;
 
-        if (isCorrect) state.score++;
+    if (isCorrect) state.score++;
 
-        // Sauvegarde pour la page de feedback
-        localStorage.setItem('quiz_state', JSON.stringify({
-            currentIndex: state.currentIndex,
-            score: state.score,
-            explain: (isCorrect ? "Bonne réponse — " : "Mauvaise réponse — ") + current.explain
-        }));
+    // On prépare l'explication pour la page suivante
+    localStorage.setItem('quiz_state', JSON.stringify({
+        currentIndex: state.currentIndex,
+        score: state.score,
+        explain: (isCorrect ? "✅ Bonne réponse !\n\n" : "❌ Mauvaise réponse...\n\n") + current.explain
+    }));
 
-        // Redirection
-        window.location.href = isCorrect ? 'correct.html' : 'incorrect.html';
-    });
-}
+    window.location.href = isCorrect ? 'correct.html' : 'incorrect.html';
+});
 
-// ─────────────── LANCEMENT ───────────────
+// ─────────────── DÉMARRAGE ───────────────
 render();
