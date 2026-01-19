@@ -1,66 +1,78 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz — Stanozolol</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Styles temporaires pour forcer l'affichage des questions -->
+  
+  <!-- Styles temporaires de secours -->
   <style>
-    #q-title, #q-sub, #answers {
-      display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
+    body { font-family: Arial, Helvetica, sans-serif; background: #0d1117; color: #e6e6e6; }
+    .container { max-width: 700px; margin: 40px auto; padding: 30px; background: #161b22; border-radius: 12px; }
+    #q-title { font-size: 2.2rem; margin-bottom: 0.4rem; }
+    #q-sub  { font-size: 1.4rem; margin: 1rem 0 2rem; color: #a5d6ff; }
+    .answers-grid {
+      display: grid;
+      gap: 12px;
     }
-
     .answer {
-      display: block;
-      padding: 10px 15px;
-      margin: 8px 0;
-      background: #eee;
-      border: 1px solid #333;
-      border-radius: 6px;
+      padding: 16px 20px;
+      background: #21262d;
+      border: 2px solid #30363d;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 1.1rem;
+      text-align: left;
+      transition: all 0.2s;
     }
-
+    .answer:hover {
+      background: #30363d;
+      border-color: #58a6ff;
+    }
     .answer.selected {
-      background: #4caf50;
+      background: #238636;
+      border-color: #2ea043;
       color: white;
-      font-weight: bold;
     }
-
     .btn {
-      padding: 10px 20px;
-      margin-right: 10px;
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
+      background: #238636;
+      color: white;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #2ea043;
+    }
+    #progress {
+      margin-top: 1.5rem;
+      color: #8b949e;
+      font-size: 0.95rem;
     }
   </style>
 </head>
 <body>
 
-<div class="container fade-in" id="quiz-container">
-  <h1 class="title neon-blue" id="q-title"></h1>
-  <h2 class="subtitle neon-text" id="q-sub"></h2>
-
+<div class="container" id="quiz-container">
+  <h1 id="q-title"></h1>
+  <h2 id="q-sub"></h2>
+  
   <div id="answers" class="answers-grid"></div>
-
-  <div style="margin-top:24px;">
-    <button id="validateBtn" class="btn neon-3d">
-      Valider la réponse
-    </button>
-
-    <button id="restartBtn" class="btn small neon-blue-border" style="display:none;">
-      Recommencer
+  
+  <div style="margin-top: 2.5rem; text-align: center;">
+    <button id="validateBtn" class="btn">Valider la réponse</button>
+    <button id="restartBtn" class="btn" style="display:none; margin-left: 20px; background:#444d56;">
+      Recommencer le quiz
     </button>
   </div>
-
-  <p id="progress" style="margin-top:12px"></p>
+  
+  <p id="progress"></p>
 </div>
 
-<!-- Script du quiz -->
 <script src="script.js"></script>
-
 </body>
 </html>
