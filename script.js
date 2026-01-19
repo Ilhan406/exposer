@@ -91,10 +91,12 @@ const questions = [
 // shuffle helper
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
-// Get state or initialize
-let state = JSON.parse(localStorage.getItem('quiz_state') || '{}');
-if (typeof state.currentIndex !== 'number') state.currentIndex = 0;
-state.total = questions.length;
+// Initialize state CLEAN
+let state = {
+  currentIndex: 0,
+  score: 0,
+  total: questions.length
+};
 localStorage.setItem('quiz_state', JSON.stringify(state));
 
 const qTitle = document.getElementById('q-title');
@@ -106,11 +108,11 @@ const progress = document.getElementById('progress');
 
 function render() {
   answersWrap.innerHTML = '';
-  const idx = state.currentIndex || 0;
+  const idx = state.currentIndex;
   if (idx >= questions.length) {
     qTitle.innerText = 'Quiz terminé';
     qSub.innerText = 'Merci d\'avoir participé !';
-    progress.innerText = `Score final: ${state.score||0} / ${questions.length}`;
+    progress.innerText = `Score final: ${state.score} / ${questions.length}`;
     validateBtn.style.display = 'none';
     restartBtn.style.display = 'inline-block';
     return;
@@ -119,21 +121,19 @@ function render() {
   qTitle.innerText = `QUESTION ${idx+1} —`;
   qSub.innerText = current.q;
   progress.innerText = `Question ${idx+1} / ${questions.length}`;
-  // randomize order of choices
+
   const order = current.choices.map((c,i)=>({c,i}));
   shuffle(order);
-  // create answer buttons in varying positions and variants
+
   const positions = ['pos-top','pos-mid','pos-bottom'];
   for (let i=0;i<order.length;i++) {
     const b = document.createElement('button');
     b.className = 'answer variant-' + ((i%3)+1) + ' ' + positions[Math.floor(Math.random()*positions.length)];
     b.innerText = order[i].c;
-    b.dataset.origIndex = order[i].i; // original index to check correctness
+    b.dataset.origIndex = order[i].i;
     b.addEventListener('click', () => {
-      // single-select behavior
       document.querySelectorAll('.answer').forEach(x=>x.classList.remove('selected'));
       b.classList.add('selected');
-      // store selected index
       state.selected = Number(b.dataset.origIndex);
       localStorage.setItem('quiz_state', JSON.stringify(state));
     });
@@ -144,36 +144,26 @@ function render() {
 }
 
 validateBtn.addEventListener('click', () => {
-  const idx = state.currentIndex || 0;
-  if (idx >= questions.length) return;
-  const current = questions[idx];
+  const current = questions[state.currentIndex];
   if (typeof state.selected !== 'number') {
     alert('Choisis d\'abord une réponse puis clique sur Valider.');
     return;
   }
   const isCorrect = (state.selected === current.correctIndex);
-  // update score
-  if (!state.score) state.score = 0;
   if (isCorrect) state.score++;
-  // store explanation to show on feedback page
-  state.explain = isCorrect ? 'Bonne réponse — ' + current.explain : 'Mauvaise réponse — ' + current.explain;
-  // keep currentIndex unchanged here; feedback page will increment when clicking Suivant
+  state.explain = (isCorrect ? 'Bonne réponse — ' : 'Mauvaise réponse — ') + current.explain;
   localStorage.setItem('quiz_state', JSON.stringify(state));
-  // navigate to corresponding page
   window.location = isCorrect ? 'correct.html' : 'incorrect.html';
 });
 
 restartBtn.addEventListener('click', () => {
-  state.currentIndex = 0; state.score = 0; state.selected = undefined; state.explain='';
+  state.currentIndex = 0;
+  state.score = 0;
+  state.selected = undefined;
+  state.explain = '';
   localStorage.setItem('quiz_state', JSON.stringify(state));
   render();
 });
 
-// When the page loads, render. But if we come back from feedback page, ensure selected cleared.
-window.addEventListener('load', () => {
-  // if we just arrived from feedback page, keep state as is but clear selected
-  state = JSON.parse(localStorage.getItem('quiz_state') || '{}');
-  state.selected = undefined;
-  localStorage.setItem('quiz_state', JSON.stringify(state));
-  render();
-});
+// Render on load
+render();
