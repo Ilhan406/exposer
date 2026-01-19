@@ -1,4 +1,6 @@
 // Quiz logic
+localStorage.removeItem('quiz_state');
+
 const questions = [
   {
     id:1,
