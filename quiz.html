@@ -4,6 +4,39 @@
   <meta charset="utf-8">
   <title>Quiz — Stanozolol</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Styles temporaires pour forcer l'affichage des questions -->
+  <style>
+    #q-title, #q-sub, #answers {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .answer {
+      display: block;
+      padding: 10px 15px;
+      margin: 8px 0;
+      background: #eee;
+      border: 1px solid #333;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .answer.selected {
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
 
@@ -26,7 +59,7 @@
   <p id="progress" style="margin-top:12px"></p>
 </div>
 
-<!-- ⚠️ IMPORTANT : le JS DOIT être chargé après le HTML -->
+<!-- Script du quiz -->
 <script src="script.js"></script>
 
 </body>
