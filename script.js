@@ -1,5 +1,4 @@
-// Quiz logic — VERSION STABLE (toujours question 1)
-
+// Quiz logic — VERSION STABLE (passe à la question suivante)
 
 let state = JSON.parse(localStorage.getItem('quiz_state'));
 
@@ -13,6 +12,9 @@ if (!state || typeof state.currentIndex !== 'number') {
   // Retour depuis page feedback → question suivante
   state.currentIndex++;
 }
+
+// Nettoyage du storage pour éviter les boucles
+localStorage.removeItem('quiz_state');
 
 
 const questions = [
@@ -111,21 +113,22 @@ function shuffle(a){
   return a;
 }
 
-// ÉTAT LOCAL (pas relu depuis localStorage)
-let state = {
-  currentIndex: 0,
-  score: 0
-};
-
 const qTitle = document.getElementById('q-title');
 const qSub = document.getElementById('q-sub');
 const answersWrap = document.getElementById('answers');
 const validateBtn = document.getElementById('validateBtn');
-const restartBtn = document.getElementById('restartBtn');
 const progress = document.getElementById('progress');
 
 function render() {
   answersWrap.innerHTML = '';
+
+  if (state.currentIndex >= questions.length) {
+    qTitle.innerText = "Quiz terminé 🎉";
+    qSub.innerText = `Score : ${state.score} / ${questions.length}`;
+    progress.innerText = "";
+    validateBtn.style.display = "none";
+    return;
+  }
 
   const current = questions[state.currentIndex];
   qTitle.innerText = `QUESTION ${state.currentIndex + 1} —`;
@@ -133,11 +136,10 @@ function render() {
   progress.innerText = `Question ${state.currentIndex + 1} / ${questions.length}`;
 
   const order = shuffle(current.choices.map((c,i)=>({c,i})));
-  const positions = ['pos-top','pos-mid','pos-bottom'];
 
   order.forEach((item,i)=>{
     const b = document.createElement('button');
-    b.className = `answer variant-${(i%3)+1} ${positions[Math.floor(Math.random()*positions.length)]}`;
+    b.className = 'answer';
     b.innerText = item.c;
     b.onclick = () => {
       document.querySelectorAll('.answer').forEach(x=>x.classList.remove('selected'));
@@ -159,8 +161,9 @@ validateBtn.onclick = () => {
   if (ok) state.score++;
 
   localStorage.setItem('quiz_state', JSON.stringify({
-    explain: (ok ? "Bonne réponse — " : "Mauvaise réponse — ") + current.explain,
-    score: state.score
+    currentIndex: state.currentIndex,
+    score: state.score,
+    explain: (ok ? "Bonne réponse — " : "Mauvaise réponse — ") + current.explain
   }));
 
   window.location = ok ? 'correct.html' : 'incorrect.html';
