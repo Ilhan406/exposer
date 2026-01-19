@@ -109,3 +109,21 @@ body::before {
 /* Feedback pages styling ensured */
 .feedback.good { border:2px solid rgba(90,255,180,0.4); background:rgba(10,50,20,0.2); }
 .feedback.bad  { border:2px solid rgba(255,90,90,0.4);  background:rgba(50,10,10,0.2); }
+
+.molecule-img {
+  max-width: 300px;
+  width: 100%;
+  display: block;
+  margin: 30px auto;
+
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 12px;
+
+  box-shadow:
+    0 0 20px rgba(77,186,255,0.35),
+    0 0 40px rgba(77,186,255,0.15);
+
+  filter: none;
+  opacity: 1;
+}
