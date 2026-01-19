@@ -1,4 +1,6 @@
-// Quiz logic
+// Quiz logic — VERSION STABLE (toujours question 1)
+
+// Nettoyage total au chargement de cette page
 localStorage.removeItem('quiz_state');
 
 const questions = [
@@ -88,16 +90,20 @@ const questions = [
   }
 ];
 
-// shuffle helper
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+// Shuffle helper
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
 
-// Initialize state CLEAN
+// ÉTAT LOCAL (pas relu depuis localStorage)
 let state = {
   currentIndex: 0,
-  score: 0,
-  total: questions.length
+  score: 0
 };
-localStorage.setItem('quiz_state', JSON.stringify(state));
 
 const qTitle = document.getElementById('q-title');
 const qSub = document.getElementById('q-sub');
@@ -108,62 +114,45 @@ const progress = document.getElementById('progress');
 
 function render() {
   answersWrap.innerHTML = '';
-  const idx = state.currentIndex;
-  if (idx >= questions.length) {
-    qTitle.innerText = 'Quiz terminé';
-    qSub.innerText = 'Merci d\'avoir participé !';
-    progress.innerText = `Score final: ${state.score} / ${questions.length}`;
-    validateBtn.style.display = 'none';
-    restartBtn.style.display = 'inline-block';
-    return;
-  }
-  const current = questions[idx];
-  qTitle.innerText = `QUESTION ${idx+1} —`;
+
+  const current = questions[state.currentIndex];
+  qTitle.innerText = `QUESTION ${state.currentIndex + 1} —`;
   qSub.innerText = current.q;
-  progress.innerText = `Question ${idx+1} / ${questions.length}`;
+  progress.innerText = `Question ${state.currentIndex + 1} / ${questions.length}`;
 
-  const order = current.choices.map((c,i)=>({c,i}));
-  shuffle(order);
-
+  const order = shuffle(current.choices.map((c,i)=>({c,i})));
   const positions = ['pos-top','pos-mid','pos-bottom'];
-  for (let i=0;i<order.length;i++) {
+
+  order.forEach((item,i)=>{
     const b = document.createElement('button');
-    b.className = 'answer variant-' + ((i%3)+1) + ' ' + positions[Math.floor(Math.random()*positions.length)];
-    b.innerText = order[i].c;
-    b.dataset.origIndex = order[i].i;
-    b.addEventListener('click', () => {
+    b.className = `answer variant-${(i%3)+1} ${positions[Math.floor(Math.random()*positions.length)]}`;
+    b.innerText = item.c;
+    b.onclick = () => {
       document.querySelectorAll('.answer').forEach(x=>x.classList.remove('selected'));
       b.classList.add('selected');
-      state.selected = Number(b.dataset.origIndex);
-      localStorage.setItem('quiz_state', JSON.stringify(state));
-    });
+      state.selected = item.i;
+    };
     answersWrap.appendChild(b);
-  }
-  validateBtn.style.display = 'inline-block';
-  restartBtn.style.display = 'none';
+  });
 }
 
-validateBtn.addEventListener('click', () => {
-  const current = questions[state.currentIndex];
-  if (typeof state.selected !== 'number') {
-    alert('Choisis d\'abord une réponse puis clique sur Valider.');
+validateBtn.onclick = () => {
+  if (state.selected == null) {
+    alert("Choisis une réponse");
     return;
   }
-  const isCorrect = (state.selected === current.correctIndex);
-  if (isCorrect) state.score++;
-  state.explain = (isCorrect ? 'Bonne réponse — ' : 'Mauvaise réponse — ') + current.explain;
-  localStorage.setItem('quiz_state', JSON.stringify(state));
-  window.location = isCorrect ? 'correct.html' : 'incorrect.html';
-});
 
-restartBtn.addEventListener('click', () => {
-  state.currentIndex = 0;
-  state.score = 0;
-  state.selected = undefined;
-  state.explain = '';
-  localStorage.setItem('quiz_state', JSON.stringify(state));
-  render();
-});
+  const current = questions[state.currentIndex];
+  const ok = state.selected === current.correctIndex;
+  if (ok) state.score++;
 
-// Render on load
+  localStorage.setItem('quiz_state', JSON.stringify({
+    explain: (ok ? "Bonne réponse — " : "Mauvaise réponse — ") + current.explain,
+    score: state.score
+  }));
+
+  window.location = ok ? 'correct.html' : 'incorrect.html';
+};
+
+// Lancement
 render();
