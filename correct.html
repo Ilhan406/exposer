@@ -1,36 +1,58 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<title>Bonne réponse</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bonne réponse !</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container { max-width: 720px; margin: 60px auto; padding: 40px; }
+    .title { color: #4ade80; font-size: 3.2rem; margin-bottom: 1.2rem; text-align: center; }
+    .explain { 
+      background: #1e293b; 
+      padding: 24px; 
+      border-radius: 12px; 
+      line-height: 1.6; 
+      white-space: pre-wrap; 
+      font-size: 1.25rem; 
+      margin: 2rem 0;
+    }
+    .buttons { text-align: center; margin-top: 2.5rem; }
+  </style>
 </head>
 <body>
+
 <div class="container fade-in">
   <h1 class="title neon-green">Bonne réponse !</h1>
-  <p class="text" id="explain"></p>
+  
+  <div class="explain" id="explain"></div>
+
   <div class="buttons">
-    <button id="nextBtn" class="btn neon-3d">Suivant</button>
+    <button id="nextBtn" class="btn neon-3d">Question suivante</button>
     <a href="index.html" class="btn small neon-blue-border">Retour au menu</a>
   </div>
 </div>
+
 <script>
-// Read state stored by quiz
 const state = JSON.parse(localStorage.getItem('quiz_state') || '{}');
-document.getElementById('explain').innerText = state.explain || '';
-document.getElementById('nextBtn').addEventListener('click', () => {
-    // advance and return to quiz or finish
-    const next = (state.currentIndex || 0) + 1;
-    state.currentIndex = next;
-    localStorage.setItem('quiz_state', JSON.stringify(state));
-    if (next >= (state.total||12)) {
-        // finished
-        alert('Fin du quiz — merci !');
+document.getElementById('explain').textContent = state.explain || 'Explication non trouvée...';
+
+document.getElementById('nextBtn').onclick = () => {
+    const nextIndex = (state.currentIndex || 0) + 1;
+    
+    if (nextIndex >= 12) {
+        localStorage.removeItem('quiz_state');
+        alert("Quiz terminé ! 🎉");
         window.location = 'index.html';
     } else {
+        localStorage.setItem('quiz_state', JSON.stringify({
+            ...state,
+            currentIndex: nextIndex,
+            selected: null
+        }));
         window.location = 'quiz.html';
     }
-});
+};
 </script>
 </body>
 </html>
