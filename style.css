@@ -127,3 +127,24 @@ body::before {
   filter: none;
   opacity: 1;
 }
+
+.belt-image-container {
+  text-align: center;
+  margin: 25px 0 35px;
+}
+
+.belt-image {
+  max-width: 280px;           /* taille raisonnable pour une ceinture */
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(77, 186, 255, 0.25);  /* léger effet neon bleu */
+  border: 1px solid rgba(77, 186, 255, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.belt-image:hover {
+  transform: scale(1.04);
+}
