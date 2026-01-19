@@ -1,21 +1,24 @@
 // Quiz logic — VERSION STABLE (passe à la question suivante)
 
-let state = JSON.parse(localStorage.getItem('quiz_state'));
+let saved = JSON.parse(localStorage.getItem('quiz_state'));
 
-if (!state || typeof state.currentIndex !== 'number') {
+let state;
+
+if (!saved || typeof saved.currentIndex !== 'number') {
   // Nouveau quiz
   state = {
     currentIndex: 0,
     score: 0
   };
 } else {
-  // Retour depuis page feedback → question suivante
-  state.currentIndex++;
+  // Question suivante
+  state = {
+    currentIndex: saved.currentIndex + 1,
+    score: saved.score
+  };
 }
 
-// Nettoyage du storage pour éviter les boucles
 localStorage.removeItem('quiz_state');
-
 
 const questions = [
   {
