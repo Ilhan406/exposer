@@ -8,13 +8,16 @@
 <body>
 
 <div class="container fade-in" id="quiz-container">
-  <h1 class="title neon-blue" id="q-title">QUESTION 1 —</h1>
+  <h1 class="title neon-blue" id="q-title"></h1>
   <h2 class="subtitle neon-text" id="q-sub"></h2>
 
   <div id="answers" class="answers-grid"></div>
 
   <div style="margin-top:24px;">
-    <button id="validateBtn" class="btn neon-3d">Valider la réponse</button>
+    <button id="validateBtn" class="btn neon-3d">
+      Valider la réponse
+    </button>
+
     <button id="restartBtn" class="btn small neon-blue-border" style="display:none;">
       Recommencer
     </button>
@@ -23,7 +26,7 @@
   <p id="progress" style="margin-top:12px"></p>
 </div>
 
-<!-- Script du quiz (doit être chargé APRÈS le HTML) -->
+<!-- ⚠️ IMPORTANT : le JS DOIT être chargé après le HTML -->
 <script src="script.js"></script>
 
 </body>
